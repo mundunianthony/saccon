@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useRef, useState } from "react";
+import React, { FC, useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -17,107 +17,113 @@ interface NavBarProps {
   handleMobileMenuToggle: () => void;
 }
 
-const NavBar: FC<NavBarProps> = ({
-  showMobileMenu,
-  handleMobileMenuToggle,
-}) => {
+const NavBar: FC<NavBarProps> = ({ showMobileMenu, handleMobileMenuToggle }) => {
   const [showDropdown, setShowDropdown] = useState(false);
-  // dark mode context consumer
   const { toggleDarkTheme, darkTheme } = useContext(ThemeContext);
-
-  // custom hook for user profile
-  const {profile } = useUserProfileInfo();
-
-  const handleShowDropdown = () => {
-    setShowDropdown(!showDropdown);
-  };
-
-  // close dropdown when user clicks outside the dropdown
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current?.contains(event.target as Node)) {
-        setShowDropdown(false);
-      }
-    }
-    // Bind the event listener
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      // Unbind the event listener on clean up
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
+  const { profile } = useUserProfileInfo();
   const navigate = useNavigate();
 
-  // handle logout
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Handle logout
   const handleLogout = async () => {
     try {
       await axios.get(`${apiBaseUrl}/api/logout/`);
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
-      // TODO: Confirm dialog before logout and redirect to login page - modal with different sizes
       navigate("/login");
-    } catch {
-      console.log("error");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      alert("An error occurred while logging out. Please try again.");
     }
   };
+
   return (
-    <div className="max-w-full relative flex items-center justify-between text-white bg-blue-700 h-16 dark:bg-blue-800 dark:text-slate-300 rounded-lg px-3 ">
+    <div className="max-w-full relative flex items-center justify-between text-white bg-blue-700 h-16 dark:bg-blue-800 dark:text-slate-300 rounded-lg px-3">
+      {/* Left Section: Logo and Mobile Menu Toggle */}
       <div className="flex items-center">
         <img src={Logo} alt="Open SACCO logo" className="w-20 h-20" />
-        <div className="lg:hidden" onClick={handleMobileMenuToggle}>
+        <div className="lg:hidden cursor-pointer" onClick={handleMobileMenuToggle}>
           {showMobileMenu ? (
-            <LucideIcon name="X" size={27} />
+            <LucideIcon name="X" size={27} aria-label="Close menu" />
           ) : (
-            <LucideIcon name="AlignJustify" size={27} />
+            <LucideIcon name="AlignJustify" size={27} aria-label="Open menu" />
           )}
         </div>
       </div>
 
+      {/* Right Section: Dark Mode Toggle, Profile Dropdown */}
       <div className="flex gap-x-5 items-center">
-        <div onClick={toggleDarkTheme}>
+        {/* Dark Mode Toggle */}
+        <button
+          onClick={toggleDarkTheme}
+          className="focus:outline-none"
+          aria-label="Toggle dark mode"
+        >
           {darkTheme ? (
             <LucideIcon name="Moon" size={24} />
           ) : (
             <LucideIcon name="Sun" size={24} />
           )}
-        </div>
-        <div>
+        </button>
+
+        {/* Profile Image and Dropdown */}
+        <div className="relative">
           <img
-            className="rounded-full  border border-white w-10 h-10"
-            src={ profile?.profile.profile_image ? `${apiBaseUrl}${profile?.profile.profile_image}` : ProfilePlaceholder}
-            // src={ProfileImage}
-            alt=" mr Isaac"
-            onClick={handleShowDropdown}
+            className="rounded-full border border-white w-10 h-10 cursor-pointer"
+            src={
+              profile?.profile?.profile_image
+                ? `${apiBaseUrl}${profile.profile.profile_image}`
+                : ProfilePlaceholder
+            }
+            alt="Profile"
+            onClick={() => setShowDropdown(!showDropdown)}
           />
-          {/* dropdown menu start here */}
+
+          {/* Dropdown Menu */}
           <div
             ref={dropdownRef}
-            className={` ${
+            className={`${
               showDropdown ? "block" : "hidden"
-            } bg-gray-200 text-black absolute z-20 mt-3 me-3 right-0 rounded-md dark:bg-blue-700 dark:text-white`}
+            } absolute z-20 mt-2 right-0 bg-gray-200 text-black rounded-md shadow-lg dark:bg-blue-700 dark:text-white`}
           >
             <div className="p-4">
-              <p className="">
-                {profile?.username}
-                <small className="bg-blue-700 dark:bg-blue-950 rounded-md text-white text-xs p-0.5">
-                  {profile?.profile.role_display}
-                </small>
+              <p className="font-medium">{profile?.username || "Guest"}</p>
+              <small className="bg-blue-700 dark:bg-blue-950 rounded-md text-white text-xs p-0.5">
+                {profile?.profile?.role_display || "User"}
+              </small>
+              <p className="text-sm text-gray-600 dark:text-gray-300 pt-2 pb-4">
+                {profile?.email || "No email available"}
               </p>
-              <p className="pb-2">{profile?.email}</p>
+
+              {/* Profile Link */}
               <Link
                 to="/profile"
-                className="flex hover:bg-blue-500/25 p-2  rounded-md dark:hover:bg-blue-500/75"
-                onClick={handleShowDropdown}
+                className="flex items-center hover:bg-blue-500/25 p-2 rounded-md dark:hover:bg-blue-500/75"
+                onClick={() => setShowDropdown(false)}
               >
+                <LucideIcon name="User" size={16} className="me-2" />
                 Profile
               </Link>
+
+              {/* Logout Button */}
               <div
-                className="flex items-center text-sm gap-x-1 cursor-pointer hover:bg-blue-500/25 p-2 my-2 rounded-md dark:hover:bg-blue-500/75"
+                className="flex items-center text-sm gap-x-2 cursor-pointer hover:bg-blue-500/25 p-2 rounded-md dark:hover:bg-blue-500/75"
                 onClick={handleLogout}
               >
-                <LucideIcon name="LogOut" size={16} /> Logout
+                <LucideIcon name="LogOut" size={16} />
+                Logout
               </div>
             </div>
           </div>
