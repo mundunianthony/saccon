@@ -85,10 +85,13 @@ const NavBar: FC<NavBarProps> = ({
         </div>
         <div>
           <img
-            className="rounded-full  border border-white w-10 h-10"
-            src={ profile?.profile.profile_image ? `${apiBaseUrl}${profile?.profile.profile_image}` : ProfilePlaceholder}
-            // src={ProfileImage}
-            alt=" mr Isaac"
+            className="rounded-full border border-white w-10 h-10"
+            src={
+              profile?.profile?.profile_image
+                ? `${apiBaseUrl}${profile.profile.profile_image}`
+                : ProfilePlaceholder
+            }
+            alt={profile?.username || "Profile"}
             onClick={handleShowDropdown}
           />
           {/* dropdown menu start here */}
@@ -100,9 +103,9 @@ const NavBar: FC<NavBarProps> = ({
           >
             <div className="p-4">
               <p className="">
-                {profile?.username}
+                {profile?.username || "Guest"}
                 <small className="bg-blue-700 dark:bg-blue-950 rounded-md text-white text-xs p-0.5">
-                  {profile?.profile.role_display}
+                  {profile?.profile?.role_display || "No Role Assigned"}
                 </small>
               </p>
               <p className="pb-2">{profile?.email}</p>

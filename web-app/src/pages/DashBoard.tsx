@@ -109,27 +109,28 @@ const DashBoard = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Account</TableHead>
-                  <TableHead >Type</TableHead>
-                  <TableHead >Amount</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Amount</TableHead>
                   <TableHead>Date</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {transactions.slice(0, 10).map((transaction) => (
-                  <TableRow key={transaction.transaction_id}>
-                    <TableCell>{transaction.account}</TableCell>
-                    <TableCell>{transaction.transaction_type}</TableCell>
-                    <TableCell className="">${transaction.amount}</TableCell>
-                    <TableCell>{transaction.transaction_date.toString()}</TableCell>
-                  </TableRow>
-                ))}
+                {Array.isArray(transactions) &&
+                  transactions.slice(0, 10).map((transaction) => (
+                    <TableRow key={transaction.transaction_id}>
+                      <TableCell>{transaction.account}</TableCell>
+                      <TableCell>{transaction.transaction_type}</TableCell>
+                      <TableCell className="">${transaction.amount}</TableCell>
+                      <TableCell>{transaction.transaction_date?.toString()}</TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </CardContent>
         </Card>
         <Card x-chunk="dashboard-01-chunk-5">
-          <CardHeader >
-            <CardTitle>Recent Loans</CardTitle>          
+          <CardHeader>
+            <CardTitle>Recent Loans</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-8">
             <div className="flex justify-between gap-4 text-sm">
@@ -137,17 +138,18 @@ const DashBoard = () => {
               <div>Status</div>
               <div>Amount</div>
             </div>
-            {loans.slice(0, 10).map((loan) => (
-              <div key={loan.loan_id} className="flex justify-between gap-4">
-                <div>{loan.account}</div>
-                <div>
-                  <Badge className="text-xs" variant="outline">
-                  {loan.loan_status}
-                  </Badge>
+            {Array.isArray(loans) &&
+              loans.slice(0, 10).map((loan) => (
+                <div key={loan.loan_id} className="flex justify-between gap-4">
+                  <div>{loan.account}</div>
+                  <div>
+                    <Badge className="text-xs" variant="outline">
+                      {loan.loan_status}
+                    </Badge>
+                  </div>
+                  <div className="font-medium">${loan.amount}</div>
                 </div>
-                <div className="font-medium">{loan.amount}</div>
-              </div>
-            ))}
+              ))}
           </CardContent>
         </Card>
       </div>

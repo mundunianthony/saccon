@@ -21,7 +21,9 @@ export function useUserProfileInfo() {
         const response = await axios.get(`${apiBaseUrl}/api/profile/`, {
           headers: headers,
         });
-        setProfile(response.data);
+        const { data: profile } = response;
+        const validatedProfile = typeof profile === "object" ? profile : null;
+        setProfile(validatedProfile);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {

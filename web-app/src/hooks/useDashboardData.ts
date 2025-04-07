@@ -14,23 +14,21 @@ export function useDashboardData() {
 
   const totalCustomers = customers ? customers.length : 0;
 
-  const totalAccountBalance = accounts
-    ? accounts.reduce((sum, account) => {
-        return (sum += account.balance);
+  const totalAccountBalance = Array.isArray(accounts)
+    ? accounts.reduce((sum, account) => sum + account.balance, 0)
+    : 0;
+
+  const totalLoans = Array.isArray(loans)
+    ? loans.reduce((sum, loan) => sum + loan.amount, 0)
+    : 0;
+
+  const totalWithdrawals = Array.isArray(transactions)
+    ? transactions.reduce((sum, transaction) => {
+        const withdrawals = transaction.transaction_type.includes("Withdrawal");
+        return withdrawals ? sum + transaction.amount : sum;
       }, 0)
     : 0;
 
-  const totalLoans = loans
-    ? loans.reduce((sum, loan) => (sum += loan.amount), 0)
-    : 0;
-
-  const totalWithdrawals = transactions.reduce((sum, transaction) => {
-    const withdrawals = transaction.transaction_type.includes("Withdrawal");
-    if (withdrawals) {
-      return (sum += transaction.amount);
-    }
-    return sum;
-  }, 0);
   return {
     totalCustomers,
     totalAccountBalance,

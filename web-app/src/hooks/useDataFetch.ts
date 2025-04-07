@@ -10,11 +10,26 @@ export function useDataFetch<T>(endpoint: string) {
   const [loading, setLoading] = useState(false);
 
   // fetcher users function
-  const fetchUsers = async () => {
+  const fetchData = async () => {
     setLoading(true);
     try {
       const response = await axios.get(`${apiBaseUrl}/${endpoint}`);
-      setData(response.data);
+
+      if (!response.status) {
+        console.error(`Error: ${response.status} ${response.statusText}`);
+        setData([]);
+        setLoading(false);
+        return;
+      }
+
+      const contentType = response.headers["content-type"];
+      if (contentType && contentType.includes("application/json")) {
+        const responseData = response.data;
+        setData(responseData);
+      } else {
+        console.error("Invalid data format:", response.data);
+        setData([]);
+      }
       setLoading(false);
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -25,9 +40,11 @@ export function useDataFetch<T>(endpoint: string) {
       setLoading(false);
     }
   };
+
   useEffect(() => {
-    fetchUsers();
+    fetchData();
   }, []);
+
   return {
     data,
     loading,
