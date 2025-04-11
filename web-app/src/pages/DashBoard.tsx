@@ -44,9 +44,7 @@ const DashBoard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalCustomers}</div>
-            <p className="text-xs text-muted-foreground">
-              +180.1% from last month
-            </p>
+            <p className="text-xs text-muted-foreground">+0% from last month</p>
           </CardContent>
         </Card>
         <Card x-chunk="dashboard-01-chunk-0">
@@ -58,9 +56,7 @@ const DashBoard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">${totalAccountBalance}</div>
-            <p className="text-xs text-muted-foreground">
-              +20.1% from last month
-            </p>
+            <p className="text-xs text-muted-foreground">+0% from last month</p>
           </CardContent>
         </Card>
         <Card x-chunk="dashboard-01-chunk-2">
@@ -72,9 +68,7 @@ const DashBoard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">${totalWithdrawals}</div>
-            <p className="text-xs text-muted-foreground">
-              +19% from last month
-            </p>
+            <p className="text-xs text-muted-foreground">+0% from last month</p>
           </CardContent>
         </Card>
         <Card x-chunk="dashboard-01-chunk-3">
@@ -83,10 +77,8 @@ const DashBoard = () => {
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$ {totalLoans}</div>
-            <p className="text-xs text-muted-foreground">
-              +201 since last hour
-            </p>
+            <div className="text-2xl font-bold">${totalLoans}</div>
+            <p className="text-xs text-muted-foreground">+0% from last month</p>
           </CardContent>
         </Card>
       </div>
@@ -121,7 +113,9 @@ const DashBoard = () => {
                       <TableCell>{transaction.account}</TableCell>
                       <TableCell>{transaction.transaction_type}</TableCell>
                       <TableCell className="">${transaction.amount}</TableCell>
-                      <TableCell>{transaction.transaction_date?.toString()}</TableCell>
+                      <TableCell>
+                        {transaction.transaction_date?.toString()}
+                      </TableCell>
                     </TableRow>
                   ))}
               </TableBody>

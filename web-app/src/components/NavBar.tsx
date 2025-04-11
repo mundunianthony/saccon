@@ -26,7 +26,7 @@ const NavBar: FC<NavBarProps> = ({
   const { toggleDarkTheme, darkTheme } = useContext(ThemeContext);
 
   // custom hook for user profile
-  const {profile } = useUserProfileInfo();
+  const { profile } = useUserProfileInfo();
 
   const handleShowDropdown = () => {
     setShowDropdown(!showDropdown);
@@ -36,7 +36,10 @@ const NavBar: FC<NavBarProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current?.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current?.contains(event.target as Node)
+      ) {
         setShowDropdown(false);
       }
     }
