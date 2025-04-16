@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import viewsets, generics, status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -22,7 +22,7 @@ from .serializers import (
     PasswordResetSerializer,
     ProfileSerializer,
 )
-from .models import Profile
+from .models import Profile, LoanRequest
 
 
 class UserViewList(viewsets.ModelViewSet):
@@ -136,8 +136,18 @@ def register_user(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(["POST"])
+def create_loan_request(request):
+    user = request.user
+    amount = request.data.get("amount")
+    if not amount:
+        return Response({"error": "Amount is required"}, status=400)
+    loan_request = LoanRequest.objects.create(user=user, amount=amount)
+    return Response({"message": "Loan request submitted", "id": loan_request.id}, status=201)
+
+
 urlpatterns = [
-    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/register/", register_user, name="register_user"),
+    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     # ...other routes...
 ]
