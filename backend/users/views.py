@@ -127,12 +127,6 @@ class ProfileView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class TransactionsView(APIView):
-    def get(self, request):
-        transactions = []  # Empty list returned if no transactions exist
-        return Response(transactions)
-
-
 @api_view(["POST"])
 def register_user(request):
     serializer = RegisterSerializer(data=request.data)

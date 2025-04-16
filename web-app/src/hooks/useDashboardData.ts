@@ -12,13 +12,16 @@ export function useDashboardData() {
   const { data: loans } = useDataFetch<LoanProps>("loans");
   const { data: transactions } = useDataFetch<TransactionProps>("transactions");
 
-  const totalCustomers = Array.isArray(customers) ? customers.length : 0;
+  const totalCustomers = customers ? customers.length : 0;
+
   const totalAccountBalance = Array.isArray(accounts)
     ? accounts.reduce((sum, account) => sum + account.balance, 0)
     : 0;
+
   const totalLoans = Array.isArray(loans)
     ? loans.reduce((sum, loan) => sum + loan.amount, 0)
     : 0;
+
   const totalWithdrawals = Array.isArray(transactions)
     ? transactions.reduce((sum, transaction) => {
         const withdrawals = transaction.transaction_type.includes("Withdrawal");
@@ -27,9 +30,9 @@ export function useDashboardData() {
     : 0;
 
   return {
-    totalCustomers: totalCustomers || 0,
-    totalAccountBalance: totalAccountBalance || 0,
-    totalLoans: totalLoans || 0,
-    totalWithdrawals: totalWithdrawals || 0,
+    totalCustomers,
+    totalAccountBalance,
+    totalLoans,
+    totalWithdrawals,
   };
 }
